@@ -13,6 +13,22 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler
 import joblib
 from gpt4all import GPT4All
 from datetime import datetime
+import threading
+
+db_write_lock = threading.Lock()
+_orig_execute = kuzu.Connection.execute
+
+def _safe_execute(self, query, parameters=None):
+    if isinstance(query, str):
+        q_upper = query.upper()
+        if any(kw in q_upper for kw in ['CREATE ', 'SET ', 'DELETE ', 'MERGE ', 'DROP ', 'ALTER ']):
+            with db_write_lock:
+                if parameters: return _orig_execute(self, query, parameters)
+                return _orig_execute(self, query)
+    if parameters: return _orig_execute(self, query, parameters)
+    return _orig_execute(self, query)
+
+kuzu.Connection.execute = _safe_execute
 
 app = Flask(__name__, template_folder='ui/templates', static_folder='ui/static')
 
@@ -265,7 +281,7 @@ def get_nodes():
         row = res_edges.get_next()
         edges.append({"source": row[0], "target": row[1], "type": "PART_OF"})
         
-    res_ref = conn.execute("MATCH (m1:GlobalNode)-[r]->(m2:GlobalNode) WHERE type(r) IN ['REFERENCES', 'FOLLOWS', 'REPLIES_TO'] RETURN m1.id, m2.id, type(r)")
+    res_ref = conn.execute("MATCH (m1:GlobalNode)-[r]->(m2:GlobalNode) WHERE LABEL(r) IN ['REFERENCES', 'FOLLOWS', 'REPLIES_TO'] RETURN m1.id, m2.id, LABEL(r)")
     while res_ref.has_next():
         row = res_ref.get_next()
         edges.append({"source": row[0], "target": row[1], "type": row[2]})
