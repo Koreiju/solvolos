@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Milkdown Projector</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Milkdown Dependencies -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/@milkdown/theme-nord@7/style.css">
+    <script type="importmap">
+    {
+      "imports": {
+        "@milkdown/core": "https://esm.sh/@milkdown/core@7",
+        "@milkdown/preset-commonmark": "https://esm.sh/@milkdown/preset-commonmark@7",
+        "@milkdown/theme-nord": "https://esm.sh/@milkdown/theme-nord@7",
+        "@milkdown/ctx": "https://esm.sh/@milkdown/ctx@7",
+        "@milkdown/utils": "https://esm.sh/@milkdown/utils@7",
+        "@milkdown/plugin-listener": "https://esm.sh/@milkdown/plugin-listener@7",
+        "@milkdown/preset-gfm": "https://esm.sh/@milkdown/preset-gfm@7",
+        "@milkdown/plugin-history": "https://esm.sh/@milkdown/plugin-history@7",
+        "@milkdown/plugin-clipboard": "https://esm.sh/@milkdown/plugin-clipboard@7",
+        "@milkdown/plugin-prism": "https://esm.sh/@milkdown/plugin-prism@7",
+        "@milkdown/plugin-tooltip": "https://esm.sh/@milkdown/plugin-tooltip@7",
+        "@milkdown/plugin-slash": "https://esm.sh/@milkdown/plugin-slash@7"
+      }
+    }
+    </script>
+
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    
+    <!-- App CSS & JS -->
+    <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+    <div id="projector-panel">
+        <canvas id="projector-canvas"></canvas>
+    </div>
+
+    <!-- Milkdown Billboard Overlay -->
+    <div id="billboard" class="billboard" style="display: none;">
+        <div class="billboard-header">
+            <span id="billboard-title">Chat Session</span>
+            <div class="header-actions">
+                <i class="fas fa-th-umbtack" id="billboard-pin" title="Pin to screen"></i>
+                <i class="fas fa-times" id="billboard-close" title="Close"></i>
+            </div>
+        </div>
+        
+        <div class="billboard-content" id="milkdown-container">
+            <!-- Markdown content streams here -->
+        </div>
+
+        <!-- Popups for @ and \ -->
+        <div id="reference-popup" class="suggestion-popup" style="display: none;">
+            <div class="popup-title">References & Retrieval</div>
+            <div class="popup-list" id="popup-results"></div>
+        </div>
+
+        <div class="billboard-footer">
+            <div class="chat-input-wrapper">
+                <div class="chat-input-backdrop"></div>
+                <div id="badges-container" style="display:flex; gap:6px; align-items:center;"></div>
+                <input type="text" id="chat-input" placeholder="Type a message... Use \ to retrieve" autocomplete="off">
+                <button id="send-btn"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/projector.js"></script>
+    <script type="module" src="/static/js/billboard.js"></script>
+</body>
+</html>
