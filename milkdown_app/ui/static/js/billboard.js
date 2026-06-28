@@ -7,8 +7,8 @@ import { gfm } from '@milkdown/preset-gfm';
 import { history } from '@milkdown/plugin-history';
 import { clipboard } from '@milkdown/plugin-clipboard';
 import { prism } from '@milkdown/plugin-prism';
-import { tooltip } from '@milkdown/plugin-tooltip';
-import { slash } from '@milkdown/plugin-slash';
+import { tooltipFactory } from '@milkdown/plugin-tooltip';
+import { slashFactory } from '@milkdown/plugin-slash';
 
 class BillboardApp {
     constructor() {
@@ -54,12 +54,6 @@ class BillboardApp {
             .config((ctx) => {
                 ctx.set(rootCtx, this.content);
                 ctx.set(defaultValueCtx, "");
-                ctx.get(listenerCtx).markdownUpdated((ctx, markdown, prevMarkdown) => {
-                    if (markdown !== prevMarkdown && this.currentNodeId) {
-                        this.documentText = markdown;
-                        this.debouncedSave();
-                    }
-                });
             })
             .use(nord)
             .use(commonmark)
@@ -67,10 +61,18 @@ class BillboardApp {
             .use(history)
             .use(clipboard)
             .use(prism)
-            .use(tooltip)
-            .use(slash)
             .use(listener)
             .create();
+
+        this.editor.action((ctx) => {
+            const lst = ctx.get(listenerCtx);
+            lst.markdownUpdated((ctx, markdown, prevMarkdown) => {
+                if (markdown !== prevMarkdown && this.currentNodeId) {
+                    this.documentText = markdown;
+                    this.debouncedSave();
+                }
+            });
+        });
     }
 
     debouncedSave() {
@@ -78,7 +80,7 @@ class BillboardApp {
         this.saveTimeout = setTimeout(async () => {
             if (!this.currentNodeId) return;
             try {
-                await fetch('/api/nodes/update', {
+                const res = await fetch('/api/nodes/update', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
