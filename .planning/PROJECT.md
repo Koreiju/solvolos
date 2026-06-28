@@ -23,7 +23,26 @@ Visually and intuitively interact with locally-generated LLM context mapping and
 
 ### Active
 
-(None currently - formalizing v1.0 prototype)
+- v1.2: Token-Budgeted Context Engine (Strict token limits & Structural injection)
+- v1.2: Token-Budgeted Context Engine (Strict token limits & Structural injection)
+- v1.3: Diffuse Semantic Rendering (Non-chronological interstitial AI stream insertion)
+- v2.0: Projective Physics & Visual Topologies (Fly-to-view billboards & Glowing edge mapping)
+- v2.1: Feedback-Driven UX & Continuity (Playground parity, instant token streams, 3D normalization physics)
+
+## Current Milestone: v1.1 Verification of Milkdown, Chat, and Semantic Retrieval
+
+**Goal:** Verify that we can edit our milkdown node, send chats, and receive the semantic recursive chunk diffuse updates correctly, also verify our retrieval works correctly as well, and works both for the editable milkdown panel and the chat panel.
+
+**Target features:**
+- Editable Milkdown Node Verification
+- Chat Sending and Diffuse Updates Verification
+- Semantic Retrieval Verification (both Milkdown and Chat panels)
+
+## Current State
+**v1.0 Shipped**: The application now features a fully editable `@milkdown/core` 2D billboard integration synchronized directly with a Flask SSE chat stream and local KuzuDB. All nodes are structurally unified around session anchors instead of projecting indiscriminately. 
+
+## Next Milestone Goals
+Executing the continuous multi-milestone projection (v1.1 through v2.1) encompassing 11 distinct phases to achieve the final, fully-realized `SEED.md` vision and chat-feedback refinements autonomously via `/gsd-autonomous`.
 
 ### Out of Scope
 
@@ -65,4 +84,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-27 after initialization*
+*Last updated: 2026-06-27 (v1.1 Milestone Started)*
