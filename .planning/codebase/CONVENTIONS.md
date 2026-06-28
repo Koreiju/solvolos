@@ -6,7 +6,7 @@
 - **JavaScript**: Object-oriented encapsulation class patterns (`ProjectorApp`, `BillboardApp`) attached directly to the `window` namespace for global cross-communication (`window.app` and `window.billboardApp`).
 
 ## UI & CSS
-- Variables are defined at the `:root` level representing the custom Nord/Glassmorphism theme in `main.css`.
+- Variables are defined at the `:root` level representing the custom brutalist solid black theme in `main.css`.
 - Flexbox is utilized extensively over grid or absolute positioning where possible for 2D UI elements.
 
 ## API Patterns

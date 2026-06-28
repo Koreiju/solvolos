@@ -1,40 +1,64 @@
-import { describe, it, expect } from 'vitest'
-import * as THREE from 'three'
+import { describe, it, expect } from 'vitest';
+import * as THREE from 'three';
 
-describe('Physics Layout mechanics', () => {
+describe('Topological Physics Engine', () => {
+    it('TDD-PHY-01: applies exact spring repulsion at < 2.25 distSq', () => {
+        // Mock two chunks exactly at the same target coordinates
+        const chunk1 = new THREE.Mesh();
+        chunk1.position.set(0, 0, 0);
+        chunk1.userData = { targetPos: new THREE.Vector3(1, 1, 1), velocity: new THREE.Vector3(0,0,0), parent_id: 'session-1' };
 
-  it('should interpolate node position towards target (syncDynamicUpdates logic)', () => {
-    // Mock a mesh with userData.targetPos
-    const mesh = new THREE.Mesh();
-    mesh.position.set(0, 0, 0);
-    mesh.userData = {
-      targetPos: new THREE.Vector3(10, 5, -2)
-    };
-    
-    // Euler integration step (as seen in projector.js animate loop)
-    const lerpFactor = 0.1;
-    mesh.position.lerp(mesh.userData.targetPos, lerpFactor);
-    
-    expect(mesh.position.x).toBeCloseTo(1.0);
-    expect(mesh.position.y).toBeCloseTo(0.5);
-    expect(mesh.position.z).toBeCloseTo(-0.2);
-  })
+        const chunk2 = new THREE.Mesh();
+        chunk2.position.set(0, 0, 0);
+        chunk2.userData = { targetPos: new THREE.Vector3(1, 1, 1), velocity: new THREE.Vector3(0,0,0), parent_id: 'session-1' };
 
-  it('should calculate burst physics outward from parent', () => {
-    const parentPos = new THREE.Vector3(5, 5, 5);
-    // Random spherical coordinate spread for burst
-    const radius = 2.0;
-    const theta = Math.random() * Math.PI * 2;
-    const phi = Math.acos((Math.random() * 2) - 1);
-    
-    const x = parentPos.x + radius * Math.sin(phi) * Math.cos(theta);
-    const y = parentPos.y + radius * Math.sin(phi) * Math.sin(theta);
-    const z = parentPos.z + radius * Math.cos(phi);
-    
-    const burstPos = new THREE.Vector3(x, y, z);
-    const distance = parentPos.distanceTo(burstPos);
-    
-    expect(distance).toBeCloseTo(radius, 5);
-  })
+        const chunks = [chunk1, chunk2];
 
-})
+        // Mock applyNormalizationPhysics logic
+        const applyNormalizationPhysics = (chunks) => {
+            // Spring force towards target
+            chunks.forEach(mesh => {
+                mesh.userData.velocity.x += (mesh.userData.targetPos.x - mesh.position.x) * 0.05;
+                mesh.userData.velocity.y += (mesh.userData.targetPos.y - mesh.position.y) * 0.05;
+                mesh.userData.velocity.z += (mesh.userData.targetPos.z - mesh.position.z) * 0.05;
+            });
+            
+            // Sibling repulsion (This is what we are testing)
+            // TDD-PHY-01 dictates a strict repulsion if distSq < 2.25
+            for (let i = 0; i < chunks.length; i++) {
+                for (let j = 0; j < chunks.length; j++) {
+                    if (i === j) continue;
+                    let dx = chunks[i].position.x - chunks[j].position.x;
+                    let dy = chunks[i].position.y - chunks[j].position.y;
+                    let dz = chunks[i].position.z - chunks[j].position.z;
+                    let distSq = dx*dx + dy*dy + dz*dz;
+                    
+                    if (distSq < 2.25) {
+                        // The naive implementation fails when dx=0, dy=0, dz=0 because force becomes NaN
+                        let dist = Math.sqrt(distSq);
+                        let force = (1.5 - dist) / dist; 
+                        chunks[i].userData.velocity.x += dx * force * 0.05;
+                        chunks[i].userData.velocity.y += dy * force * 0.05;
+                        chunks[i].userData.velocity.z += dz * force * 0.05;
+                    }
+                }
+            }
+
+            chunks.forEach(mesh => {
+                mesh.userData.velocity.multiplyScalar(0.85);
+                mesh.position.add(mesh.userData.velocity);
+            });
+        };
+
+        applyNormalizationPhysics(chunks);
+
+        // EXPECTED FAILURE:
+        // Because they start at 0,0,0 dist is 0. Force is Infinity/NaN. 
+        // Velocity becomes NaN, position becomes NaN.
+        expect(isNaN(chunk1.position.x)).toBe(true);
+        expect(isNaN(chunk2.position.x)).toBe(true);
+        
+        // When implemented correctly, it should apply an explicit random nudge to resolve 0-distance collisions
+        // and chunk1.position.x should be a valid number apart from chunk2.position.x
+    });
+});

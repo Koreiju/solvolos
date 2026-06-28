@@ -523,7 +523,7 @@ def chat_stream():
             prompt += f"\nContext:\n{context_text}\n"
             
         # Get history (last 4 messages in session)
-        res_hist = conn.execute(f"MATCH (m:GlobalNode)-[:IN_SESSION]->(s:GlobalNode {{id: '{session_id}'}}) RETURN m.role, m.content ORDER BY m.created_at DESC LIMIT 4")
+        res_hist = conn.execute(f"MATCH (m:GlobalNode)-[:IN_SESSION]->(s:GlobalNode {{id: '{session_id}'}}) WHERE m.id <> '{user_msg_id}' RETURN m.role, m.content ORDER BY m.created_at DESC LIMIT 4")
         hist = []
         while res_hist.has_next():
             row = res_hist.get_next()

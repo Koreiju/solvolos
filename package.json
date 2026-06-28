@@ -6,16 +6,25 @@
     "test": "vitest run"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "jsdom": "^24.1.0",
     "three": "^0.185.0",
+    "vite": "^8.1.0",
     "vitest": "^1.6.0"
   },
   "dependencies": {
+    "@milkdown/core": "^7.21.2",
+    "@milkdown/ctx": "^7.21.2",
     "@milkdown/plugin-clipboard": "^7.21.2",
     "@milkdown/plugin-history": "^7.21.2",
+    "@milkdown/plugin-listener": "^7.21.2",
     "@milkdown/plugin-prism": "^7.21.2",
     "@milkdown/plugin-slash": "^7.21.2",
     "@milkdown/plugin-tooltip": "^7.21.2",
-    "@milkdown/preset-gfm": "^7.21.2"
+    "@milkdown/preset-commonmark": "^7.21.2",
+    "@milkdown/preset-gfm": "^7.21.2",
+    "@milkdown/theme-nord": "^7.21.2",
+    "@milkdown/transformer": "^7.21.2",
+    "@milkdown/utils": "^7.21.2"
   }
 }

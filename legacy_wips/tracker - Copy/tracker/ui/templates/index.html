@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orbit: Company Discovery</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    
+    <!-- Error Trapping for Debugging -->
+    <script>
+        window.onerror = function(msg, url, lineNo, columnNo, error) {
+            const errorBox = document.getElementById('error-overlay') || document.createElement('div');
+            errorBox.id = 'error-overlay';
+            errorBox.style.cssText = 'position:fixed; top:0; left:0; width:100%; background:rgba(200,0,0,0.9); color:white; padding:20px; z-index:9999; font-family:monospace; pointer-events:none;';
+            errorBox.innerHTML += `<div><strong>Error:</strong> ${msg}<br><small>${url}:${lineNo}</small></div>`;
+            document.body.appendChild(errorBox);
+            console.error(error);
+            return false;
+        };
+    </script>
+</head>
+<body>
+    <div id="container">
+        <!-- 3D Viewport -->
+        <div id="projector-panel">
+            <canvas id="projector-canvas"></canvas>
+            
+            <!-- Floating Controls -->
+            <div id="viewport-controls">
+                <div class="legend-item"><span class="dot status-yes"></span> Reach Out</div>
+                <div class="legend-item"><span class="dot status-no"></span> Not a Fit</div>
+                <div class="legend-item"><span class="dot status-unreviewed"></span> Unreviewed</div>
+            </div>
+
+            <!-- 2D Billboard (Dynamic Overlay) -->
+            <div id="billboard">
+                <div class="billboard-header">
+                    <h3 id="billboard-title">Company Name</h3>
+                    <button id="billboard-close"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="billboard-body">
+                    <p id="billboard-location" class="meta-location"><i class="fas fa-map-marker-alt"></i> <span>Location</span></p>
+                    <p id="billboard-desc">Description goes here...</p>
+                    
+                    <div class="status-controls">
+                        <button class="status-btn" data-status="yes" id="btn-yes">
+                            <i class="fas fa-check"></i> Yes
+                        </button>
+                        <button class="status-btn" data-status="no" id="btn-no">
+                            <i class="fas fa-times"></i> No
+                        </button>
+                    </div>
+                    
+                    <!-- Billboard Tag Management -->
+                    <div class="billboard-tags-section" style="margin-bottom: 15px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <div class="filter-label" style="font-size: 11px; color: #9aa5b1; margin-bottom: 5px;">ASSIGNED TAGS</div>
+                        <div class="tags-list" id="billboard-tags-list" style="display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px;"></div>
+                        <input type="text" id="billboard-tag-input" class="tag-input" placeholder="+ Add new tag (Enter)" style="width: 100%; padding: 5px; background: rgba(0,0,0,0.2); border: 1px solid #333; color: white; border-radius: 4px; margin-bottom: 8px;">
+                        
+                        <!-- Quick Add Tags -->
+                        <div class="filter-label" style="font-size: 10px; color: #6b7280; margin-bottom: 4px; margin-top: 8px;">QUICK ADD (ALL TAGS)</div>
+                        <div id="billboard-quick-tags" class="tag-cloud" style="display: flex; flex-wrap: wrap; gap: 4px; max-height: 80px; overflow-y: auto; padding-right: 5px;">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+
+                    <div class="action-row">
+                        <a id="billboard-link" href="#" target="_blank" class="website-link">
+                            Visit Website <i class="fas fa-external-link-alt"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Sidebar -->
+        <div id="sidebar">
+            <!-- Sidebar Video Background -->
+            <div class="sidebar-bg-container">
+                <video class="sidebar-video" autoplay muted loop playsinline>
+                    <source src="/static/sidefall.mp4" type="video/mp4">
+                </video>
+                <div class="sidebar-glass"></div>
+            </div>
+
+            <div id="sidebar-header">
+                <h3>Retrieval Results</h3>
+                
+                <!-- Search Input -->
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="nl-search" placeholder="Search (e.g. 'Aerospace vision')...">
+                </div>
+
+                <!-- Filters -->
+                <div class="filter-group">
+                    <div class="filter-label">Status</div>
+                    <div class="filter-bar">
+                        <label><input type="checkbox" checked value="unreviewed" class="filter-cb"> Unreviewed</label>
+                        <label><input type="checkbox" checked value="yes" class="filter-cb"> Yes</label>
+                        <label><input type="checkbox" value="no" class="filter-cb"> No</label>
+                    </div>
+                </div>
+
+                <div class="filter-group" id="tag-filter-container" style="display:none;">
+                    <div class="filter-label">Filter by Tags</div>
+                    <div id="tag-filters-list" class="tag-cloud">
+                        <!-- Tag chips injected here -->
+                    </div>
+                </div>
+            </div>
+            
+            <div id="results-container">
+                <!-- Result Cards Injected Here -->
+                <div class="empty-state">Select a node or search to find companies.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
+    <script src="/static/js/projector.js"></script>
+</body>
+</html>

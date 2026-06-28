@@ -5,7 +5,7 @@
 - **Python**: Backend server logic.
 - **Flask**: Lightweight web framework for HTTP endpoints and SSE streams.
 - **JavaScript (ES6+)**: Vanilla JS for frontend logic.
-- **HTML/CSS**: Custom vanilla styling, specifically emphasizing a Nord/Milkdown glassmorphic aesthetic.
+- **HTML/CSS**: Custom vanilla styling, specifically emphasizing a brutalist solid black, sharp-cornered aesthetic.
 - **Markdown**: Parsed in frontend via `marked` and sanitized with `DOMPurify`.
 
 ## Data & AI

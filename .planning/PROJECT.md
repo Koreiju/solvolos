@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A local-only, backend-driven 3D web application integrating a Milkdown-inspired 2D glassmorphic UI with a 3D knowledge graph property network. It visualizes and retrieves LLM-generated semantic responses recursively mapped into chunked property nodes.
+A local-only, backend-driven 3D web application integrating a Milkdown-inspired 2D brutalist solid black UI with a 3D knowledge graph property network. It visualizes and retrieves LLM-generated semantic responses recursively mapped into chunked property nodes.
 
 ## Core Value
 
@@ -17,7 +17,7 @@ Visually and intuitively interact with locally-generated LLM context mapping and
 - ✓ Local vector embeddings of text chunks via nomic-embed-text-v1.5 — existing
 - ✓ Graph topology persistence using KuzuDB — existing
 - ✓ 3D spatial visualization of the semantic graph via Three.js — existing
-- ✓ 2D Glassmorphic Milkdown billboard overlay for chat interactions — existing
+- ✓ 2D Brutalist black Milkdown billboard overlay for chat interactions — existing
 - ✓ Context linking auto-suggest UI via `@` references — existing
 - ✓ Vector retrieval auto-suggest UI via `\` commands — existing
 
@@ -55,9 +55,10 @@ The project evolved from legacy trackers (`tracker` and `tracker - Copy`) which 
 
 ## Constraints
 
-- **Architecture**: Monolithic local server (Flask + Python ML pipelines) — Ensures ease of local setup.
+- **Architecture**: Monolithic local server (Flask + Python ML pipelines) — Ensures ease of local setup. All architecture is strictly modeled in `../architecture/MAIN.md`.
 - **Frontend**: Vanilla Javascript and CSS — Reduces build complexity and dependency footprint.
 - **Storage**: KuzuDB file-based storage — Avoids needing a standalone database server.
+- **Workflow Automation**: Full reliance on `gsd-autonomous` augmented by the `gsd-model-design-test` skill to enforce UML and pseudocode validation prior to execution.
 
 ## Key Decisions
 

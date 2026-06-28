@@ -9,7 +9,7 @@
       - `index.html` - The single-page application markup and layout.
     - `static/`
       - `css/`
-        - `main.css` - UI aesthetics, Glassmorphism panels, Milkdown and Markdown CSS styling.
+        - `main.css` - UI aesthetics, Brutalist black panels, Milkdown and Markdown CSS styling.
       - `js/`
         - `projector.js` - Three.js WebGL canvas scene, node rendering, and raycasting interactions.
         - `billboard.js` - 2D DOM logic, Marked text parsing, chat input events, auto-suggest popups, and SSE event handling.
