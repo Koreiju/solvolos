@@ -1,10 +1,17 @@
-# Roadmap
+# Milestone v1.1 Roadmap
 
-## Phase 1: Formalize V1 Prototype
-**Goal:** Establish the currently built code as the formal v1.0 baseline.
-**Mode:** mvp
-**Requirements:** CORE-01, CORE-02, KNOW-01, KNOW-02, KNOW-03, KNOW-04, UI-01, UI-02
-**Success Criteria:**
-1. All baseline requirements are mapped to the project definition.
-2. The codebase maps cleanly to the original goals.
-3. The project is ready for future enhancements in subsequent phases.
+## Phase 2: Editable Milkdown and Chat Sync Verification
+- **Goal:** Verify that the core chat functionality and editable Milkdown nodes are fully synchronized.
+- **Requirements Mapped:** VERIFY-01, VERIFY-02, VERIFY-03
+- **Success Criteria:**
+  1. A user can double-click a node to edit it and changes persist.
+  2. A user can send chats directly from the Milkdown panel without errors.
+  3. The system processes semantic recursive chunk diffuse updates seamlessly during chat.
+
+## Phase 3: Semantic Retrieval Verification
+- **Goal:** Verify that semantic vector retrieval (`\`) functions correctly across all chat interfaces.
+- **Requirements Mapped:** VERIFY-04, VERIFY-05
+- **Success Criteria:**
+  1. Semantic retrieval (`\`) in the Milkdown panel returns accurate contextual chunks.
+  2. Semantic retrieval (`\`) in the standalone chat panel returns the same accurate contextual chunks.
+  3. Rendered badges display correctly in both editors.
