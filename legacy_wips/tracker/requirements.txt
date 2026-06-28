@@ -1,8 +1,0 @@
-flask
-kuzu
-nomic[local]
-pandas
-umap-learn
-scikit-learn
-numpy
-gpt4all
