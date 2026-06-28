@@ -218,10 +218,13 @@ def parse_markdown_to_chunks(md_text):
     push_chunk()
     return chunks
 
+embed_lock = threading.Lock()
+
 def embed_texts(texts):
     if not texts: return []
     try:
-        res = embed.text(texts=texts, model='nomic-embed-text-v1.5', task_type='search_document', inference_mode="local", device="cpu")
+        with embed_lock:
+            res = embed.text(texts=texts, model='nomic-embed-text-v1.5', task_type='search_document', inference_mode="local", device="cpu")
         return np.array(res['embeddings'])
     except Exception as e:
         print(f"[ERROR] Embedding failed: {e}")
