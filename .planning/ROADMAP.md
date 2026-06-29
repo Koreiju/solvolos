@@ -56,6 +56,7 @@ All upcoming phases will be executed via `gsd-autonomous`. Before any code is wr
   - *TDD-PHY-01*: Dispatch a global node event placing two chunks in the exact same vector coordinate; test MUST assert the physics engine applies exact spring repulsion preventing collision inside the 2.25 squared radius.
   - *TDD-PHY-02*: Trigger a `resize` DOM event while `lockedId` is active; test MUST assert the 3D camera projection vector is instantly recalculated.
   - *TDD-PHY-03*: Physics engine MUST verify the 6D UMAP (3 spatial, 3 HSV) continuously rotates the text-highlight colors at the exact speed defined in the legacy tracker.
+  - *TDD-PHY-07*: Test MUST assert `ProjectorApp` strictly copies legacy color rotation math (Euler vectors applied to HSV/RGB, scaled, clamped) and consistently tares positions to the global centroid origin.
   - *TDD-INT-02*: Simulate an active cursor focus event while an SSE chunk arrives; test MUST assert the chunk is buffered into a queue rather than forcefully injected into the Milkdown AST.
 
 ## Phase 5: State Persistence & Multi-Context Isomorphism
@@ -81,6 +82,9 @@ All upcoming phases will be executed via `gsd-autonomous`. Before any code is wr
 - **TDD Designed-To-Fail Cases:** 
   - *TDD-UI-04*: Playwright MUST verify the forward-slash (`/`) operator triggers the hover-linked secondary billboard, and clicking pins it.
   - *TDD-UI-05*: Playwright MUST verify that rapidly hovering over 10 semantic results in 1 second applies a 150ms debounce/abort controller, rendering only the final secondary panel and preventing DOM spam.
+  - *TDD-UI-08*: Playwright MUST verify retrieval popup explicitly opens to the *left* of the active milkdown billboard.
+  - *TDD-UI-09*: Playwright MUST verify hovering a retrieval result spawns a temporary 2D secondary panel on the *right* of the active billboard, and clicking pins it securely on the right.
+  - *TDD-CTX-03*: Playwright MUST verify clicking a retrieval result injects the verbose chunk text directly into the chat panel payload, prepended by a violet highlighted crystal ball emoji acting as a markdown link to the origin node.
 
 ## Phase 7: Chaos Concurrency & Animation Verification
 - **Goal:** Ensure all continuous play-loops function flawlessly under chaotic user interaction (fast typing, rapid right-clicking, overlapping agent streams).
@@ -101,4 +105,5 @@ All upcoming phases will be executed via `gsd-autonomous`. Before any code is wr
 - **TDD Designed-To-Fail Cases:** 
   - *TDD-UI-06*: Playwright tests MUST assert `border-radius: 0` and `background-color: #000000` on billboard classes.
   - *TDD-UI-07*: Playwright tests MUST assert no `<button>` or `.label` elements are spawned within the billboard component.
+  - *TDD-UI-10*: Playwright tests MUST assert that a clicked/pinned node's text color immediately turns to pure white `#ffffff`, overriding UMAP color rotations.
   - *TDD-PHY-06*: Edge cylinder endpoints MUST recalculate by un-projecting 2D DOM screen space back into the 3D frustum when a node transitions between `isLocked` (2D) and `isSpatial` (3D) states.

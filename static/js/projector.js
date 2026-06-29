@@ -67,6 +67,13 @@ export class ProjectorApp {
         this.mouse = new THREE.Vector2();
         this.objects = [];
         
+        this.clock = new THREE.Clock();
+        this.animationTime = 0;
+        this.centroidTare = new THREE.Vector3(0, 0, 0);
+        this.spatialVelocity = { x: 0.05, y: 0.1, z: 0.02 };
+        this.colorVelocity = { x: 0.4, y: 0.6, z: 0.3 };
+        this.initialNodeData = new Map();
+        
         this.lockedNodes = new Map(); // Keep track of nodes pinned to 2D
         this.css3dObjects = new Map(); // Keep track of 3D objects
         
@@ -143,11 +150,19 @@ export class ProjectorApp {
         const ndcY = -(y / height) * 2 + 1;
         
         const obj = new CSS3DObject(element);
-        obj.position.set(ndcX * 20, ndcY * 20, -10);
+        
+        // Restore initial spatial position if we have it, else use ndc
+        if (this.initialNodeData.has(nodeId)) {
+            const initPos = this.initialNodeData.get(nodeId).position;
+            obj.position.copy(initPos);
+        } else {
+            obj.position.set(ndcX * 20, ndcY * 20, -10);
+        }
         obj.scale.set(0.02, 0.02, 0.02);
         
         this.scene.add(obj);
         this.css3dObjects.set(nodeId, obj);
+        this.lockedNodes.delete(nodeId);
     }
     
     convertFrom3D(nodeId, element) {
@@ -157,6 +172,47 @@ export class ProjectorApp {
             this.css3dObjects.delete(nodeId);
         }
         document.getElementById('ui-layer').appendChild(element);
+        this.lockedNodes.set(nodeId, true);
+        
+        // Pin to pure white
+        element.style.color = '#ffffff';
+        const editors = element.querySelectorAll('.milkdown');
+        editors.forEach(ed => {
+            ed.style.color = '#ffffff';
+        });
+    }
+
+    syncDynamicUpdates(data) {
+        if (!data || !data.nodes) return;
+        
+        // Calculate Centroid Tare
+        let cx = 0, cy = 0, cz = 0;
+        let count = 0;
+        data.nodes.forEach(n => {
+            if (n.x !== undefined) {
+                cx += n.x; cy += n.y; cz += n.z;
+                count++;
+            }
+        });
+        if (count > 0) {
+            this.centroidTare.set(cx / count, cy / count, cz / count);
+        }
+        
+        data.nodes.forEach(node => {
+            if (node.x !== undefined) {
+                const initialPos = new THREE.Vector3(
+                    (node.x - this.centroidTare.x) * 5, 
+                    (node.y - this.centroidTare.y) * 5, 
+                    (node.z - this.centroidTare.z) * 5
+                );
+                const umapColor = new THREE.Vector3(node.r || 0.2, node.g || 0.5, node.b || 1.0);
+                
+                this.initialNodeData.set(node.id, {
+                    position: initialPos,
+                    umapColor: umapColor
+                });
+            }
+        });
     }
     
     updateProjection() {
@@ -187,21 +243,62 @@ export class ProjectorApp {
     }
     
     tick() {
-        this.colorRotation = (this.colorRotation + 1) % 360;
         if (typeof document !== 'undefined') {
             document.documentElement.style.setProperty('--umap-hsv-rotation', `${this.colorRotation}deg`);
         }
         
-        this.physics.applyRepulsion();
+        const delta = this.clock.getDelta();
+        this.animationTime += delta;
+        const time = this.animationTime;
         
-        if (this.controls) this.controls.update();
+        const spatialMatrix = new THREE.Matrix4();
+        const spatialEuler = new THREE.Euler(
+            time * this.spatialVelocity.x,
+            time * this.spatialVelocity.y,
+            time * this.spatialVelocity.z
+        );
+        spatialMatrix.makeRotationFromEuler(spatialEuler);
+
+        const colorMatrix = new THREE.Matrix4();
+        const colorEuler = new THREE.Euler(
+            time * this.colorVelocity.x,
+            time * this.colorVelocity.y,
+            time * this.colorVelocity.z
+        );
+        colorMatrix.makeRotationFromEuler(colorEuler);
         
-        // Force all 3D HTML panels to billboard (always face the camera)
-        for (const obj of this.css3dObjects.values()) {
+        for (const [nodeId, obj] of this.css3dObjects.entries()) {
             if (this.camera) {
                 obj.quaternion.copy(this.camera.quaternion);
             }
+            
+            const initData = this.initialNodeData.get(nodeId);
+            if (initData && !this.lockedNodes.has(nodeId)) {
+                // Apply Spatial Rotation
+                const newPos = initData.position.clone().applyMatrix4(spatialMatrix);
+                obj.position.copy(newPos);
+                
+                // Apply Color Rotation (legacy math)
+                const centeredColor = initData.umapColor.clone().subScalar(0.5);
+                centeredColor.applyMatrix4(colorMatrix);
+                centeredColor.addScalar(0.5);
+                
+                centeredColor.x = Math.max(0, Math.min(1, centeredColor.x));
+                centeredColor.y = Math.max(0, Math.min(1, centeredColor.y));
+                centeredColor.z = Math.max(0, Math.min(1, centeredColor.z));
+                
+                const newColor = new THREE.Color(centeredColor.x, centeredColor.y, centeredColor.z);
+                const colorStr = '#' + newColor.getHexString();
+                obj.element.style.color = colorStr;
+                const editors = obj.element.querySelectorAll('.milkdown');
+                editors.forEach(ed => {
+                    ed.style.color = colorStr;
+                });
+            }
         }
+
+        this.physics.applyRepulsion();
+        if (this.controls) this.controls.update();
         
         if (this.renderer && this.scene && this.camera) {
             this.renderer.render(this.scene, this.camera);

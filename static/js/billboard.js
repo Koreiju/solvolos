@@ -168,22 +168,53 @@ export class BillboardApp {
                         const query = match[1].trim();
                         if (query.length > 0) {
                             try {
+                                console.log('Fetching query:', query);
                                 const res = await fetch('/api/search?q=' + encodeURIComponent(query));
                                 const data = await res.json();
+                                console.log('Fetched data:', data);
                                 const resultsDiv = popup.querySelector('.popup-results');
+                                console.log('resultsDiv:', !!resultsDiv, 'data.results:', !!data.results);
                                 if (resultsDiv && data.results) {
                                     resultsDiv.innerHTML = '';
                                     data.results.slice(0, 5).forEach(r => {
                                         const item = document.createElement('div');
-                                        item.className = 'popup-item';
-                                        item.textContent = r.text || r.id;
+                                        item.className = 'popup-item reference-item';
+                                        const displayText = r.text || r.id;
+                                        item.textContent = displayText;
+                                        
+                                        let secondaryPanel = null;
+                                        
+                                        item.onmouseenter = () => {
+                                            if (secondaryPanel) return;
+                                            secondaryPanel = document.createElement('div');
+                                            secondaryPanel.className = 'secondary-billboard temporary-panel';
+                                            secondaryPanel.style.position = 'absolute';
+                                            secondaryPanel.style.right = '-420px';
+                                            secondaryPanel.style.top = '0px';
+                                            secondaryPanel.textContent = displayText;
+                                            container.appendChild(secondaryPanel);
+                                        };
+                                        
+                                        item.onmouseleave = () => {
+                                            if (secondaryPanel && !secondaryPanel.classList.contains('pinned')) {
+                                                secondaryPanel.remove();
+                                                secondaryPanel = null;
+                                            }
+                                        };
+
                                         item.onclick = () => {
+                                            if (secondaryPanel) {
+                                                secondaryPanel.classList.add('pinned');
+                                                secondaryPanel.classList.remove('temporary-panel');
+                                            }
+                                            
+                                            // Inject verbose text with crystal ball
+                                            chatPanel.innerHTML = chatPanel.innerHTML.replace(/\\([^]*)$/, '');
                                             const badge = document.createElement('span');
                                             badge.className = 'hl-retrieval';
-                                            badge.textContent = r.id;
+                                            badge.textContent = `[🔮 ${displayText}](node://${r.id})`;
                                             badge.contentEditable = false;
                                             
-                                            chatPanel.innerHTML = chatPanel.innerHTML.replace(/\\([^]*)$/, '');
                                             chatPanel.appendChild(badge);
                                             chatPanel.innerHTML += '&nbsp;';
                                             

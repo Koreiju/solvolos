@@ -51,8 +51,10 @@ def test_pipeline_sequencer_tdd_kuz_02():
         db._db = None
         db._conn = None
         
-        # Initialize schema
+        # Initialize schema and ML
         init_schema()
+        import ml
+        ml.init_ml()
         
         # Thread function to insert
         def thread_worker(chunk_id, text):

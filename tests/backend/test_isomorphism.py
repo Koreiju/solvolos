@@ -28,6 +28,8 @@ def test_isomorphism_tdd_iso_01(client):
         db._db = None
         db._conn = None
         init_schema()
+        import ml
+        ml.init_ml()
         
         conn = get_connection()
         # Seed Kuzu
@@ -58,6 +60,8 @@ def test_subtree_isomorphism_tdd_iso_02(client):
         db._db = None
         db._conn = None
         init_schema()
+        import ml
+        ml.init_ml()
         
         conn = get_connection()
         

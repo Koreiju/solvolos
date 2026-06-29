@@ -1,0 +1,1 @@
+- **Spike findings for solvolos** (implementation patterns, constraints, gotchas) → `Skill("spike-findings-solvolos")`
