@@ -1,2 +1,4 @@
 *.kuzu
 *.gguf
+local_db
+*.wal
